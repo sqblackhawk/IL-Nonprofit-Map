@@ -217,8 +217,9 @@
                                         // Set image src path and mount fallback
                                         const imgEl = document.getElementById('rep-photo');
                                         imgEl.src = stats.rep_photo.replace("images/", "images/legislator_headshots/");
-                                        imgEl.onerror = function() { 
-                                            this.src = "https://via.placeholder.com/110x140?text=No+Photo"; 
+                                        imgEl.onerror = function() {
+                                            this.onerror = null; // This single line breaks the infinite loop!
+                                            this.src = "https://via.placeholder.com/110x140?text=No+Photo";
                                         };
                                         
                                         card.style.display = 'block';
