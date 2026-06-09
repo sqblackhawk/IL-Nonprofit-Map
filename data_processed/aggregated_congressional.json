@@ -1,0 +1,155 @@
+{
+    "1": {
+        "count": 5383,
+        "revenue": 11471125708.0,
+        "assets": 27462985591.0,
+        "rep_name": "Jonathan Jackson",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-23",
+        "rep_photo": "images/jackson.jpg"
+    },
+    "10": {
+        "count": 3785,
+        "revenue": 3178699784.0,
+        "assets": 23319191586.0,
+        "rep_name": "Brad Schneider",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-17",
+        "rep_photo": "images/schneider.jpg"
+    },
+    "11": {
+        "count": 3379,
+        "revenue": 4679537234.0,
+        "assets": 7765083830.0,
+        "rep_name": "Bill Foster",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-13",
+        "rep_photo": "images/foster.jpg"
+    },
+    "12": {
+        "count": 4846,
+        "revenue": 2981493394.0,
+        "assets": 6635008273.0,
+        "rep_name": "Mike Bost",
+        "rep_party": "Republican",
+        "rep_term": "3-Jan-15",
+        "rep_photo": "images/bost.jpg"
+    },
+    "13": {
+        "count": 5259,
+        "revenue": 10230914929.0,
+        "assets": 20353662723.0,
+        "rep_name": "Nikki Budzinski",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-23",
+        "rep_photo": "images/budzinski.jpg"
+    },
+    "14": {
+        "count": 3152,
+        "revenue": 1924681992.0,
+        "assets": 6324737645.0,
+        "rep_name": "Lauren Underwood",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-19",
+        "rep_photo": "images/underwood.jpg"
+    },
+    "15": {
+        "count": 5173,
+        "revenue": 7282007250.0,
+        "assets": 16599123914.0,
+        "rep_name": "Mary Miller",
+        "rep_party": "Republican",
+        "rep_term": "3-Jan-21",
+        "rep_photo": "images/miller2.jpg"
+    },
+    "16": {
+        "count": 4074,
+        "revenue": 3652488316.0,
+        "assets": 14388386882.0,
+        "rep_name": "Darin LaHood",
+        "rep_party": "Republican",
+        "rep_term": "10-Sep-15",
+        "rep_photo": "images/lahood.jpg"
+    },
+    "17": {
+        "count": 5515,
+        "revenue": 12839495908.0,
+        "assets": 43850305854.0,
+        "rep_name": "Eric Sorensen",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-23",
+        "rep_photo": "images/sorensen.jpg"
+    },
+    "2": {
+        "count": 4770,
+        "revenue": 2896080055.0,
+        "assets": 8003040768.0,
+        "rep_name": "Robin Kelly",
+        "rep_party": "Democratic",
+        "rep_term": "11-Apr-13",
+        "rep_photo": "images/kelly.jpg"
+    },
+    "3": {
+        "count": 2400,
+        "revenue": 3524077441.0,
+        "assets": 25232973359.0,
+        "rep_name": "Delia Ramirez",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-23",
+        "rep_photo": "images/ramirez.jpg"
+    },
+    "4": {
+        "count": 2548,
+        "revenue": 6576560576.0,
+        "assets": 16500548426.0,
+        "rep_name": "Chuy Garcia",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-19",
+        "rep_photo": "images/garcia.jpg"
+    },
+    "5": {
+        "count": 3867,
+        "revenue": 6406217016.0,
+        "assets": 18158522886.0,
+        "rep_name": "Mike Quigley",
+        "rep_party": "Democratic",
+        "rep_term": "7-Apr-09",
+        "rep_photo": "images/quigley.jpg"
+    },
+    "6": {
+        "count": 3813,
+        "revenue": 17869136304.0,
+        "assets": 47888668352.0,
+        "rep_name": "Sean Casten",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-19",
+        "rep_photo": "images/casten.jpg"
+    },
+    "7": {
+        "count": 9726,
+        "revenue": 49865261563.0,
+        "assets": 133913977611.0,
+        "rep_name": "Danny Davis",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-97",
+        "rep_photo": "images/ddavis.jpg"
+    },
+    "8": {
+        "count": 3123,
+        "revenue": 16385050078.0,
+        "assets": 36383886524.0,
+        "rep_name": "Raja Krishnamoorthi",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-17",
+        "rep_photo": "images/krishnamoorthi.jpg"
+    },
+    "9": {
+        "count": 4346,
+        "revenue": 8300679464.0,
+        "assets": 37210372917.0,
+        "rep_name": "Jan Schakowsky",
+        "rep_party": "Democratic",
+        "rep_term": "3-Jan-99",
+        "rep_photo": "images/schakowsky.jpg"
+    }
+}
