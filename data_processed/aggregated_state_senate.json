@@ -1,0 +1,533 @@
+{
+    "1": {
+        "count": 392,
+        "revenue": 594391263.0,
+        "assets": 1183276452.0,
+        "rep_name": "Javier Cervantes",
+        "rep_party": "Democratic",
+        "rep_term": "November 18, 2022",
+        "rep_photo": "images/cervantes.jpg"
+    },
+    "10": {
+        "count": 782,
+        "revenue": 1777673069.0,
+        "assets": 1691241920.0,
+        "rep_name": "Robert Martwick",
+        "rep_party": "Democratic",
+        "rep_term": "June 28, 2019",
+        "rep_photo": "images/martwick.jpg"
+    },
+    "11": {
+        "count": 442,
+        "revenue": 205006278.0,
+        "assets": 403013453.0,
+        "rep_name": "Mike Porfirio",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/porfirio.jpg"
+    },
+    "12": {
+        "count": 1143,
+        "revenue": 2530266353.0,
+        "assets": 7736584893.0,
+        "rep_name": "Celina Villanueva",
+        "rep_party": "Democratic",
+        "rep_term": "January 7, 2020",
+        "rep_photo": "images/villanueva.jpg"
+    },
+    "13": {
+        "count": 3239,
+        "revenue": 31294297704.0,
+        "assets": 78988585033.0,
+        "rep_name": "Robert Peters",
+        "rep_party": "Democratic",
+        "rep_term": "January 6, 2019",
+        "rep_photo": "images/peters.jpg"
+    },
+    "14": {
+        "count": 1126,
+        "revenue": 269829109.0,
+        "assets": 436081761.0,
+        "rep_name": "Emil Jones III",
+        "rep_party": "Democratic",
+        "rep_term": "January 14, 2009",
+        "rep_photo": "images/iii.jpg"
+    },
+    "15": {
+        "count": 1467,
+        "revenue": 601362868.0,
+        "assets": 928872244.0,
+        "rep_name": "Napoleon Harris",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2013",
+        "rep_photo": "images/harris.jpg"
+    },
+    "16": {
+        "count": 910,
+        "revenue": 290071398.0,
+        "assets": 268739620.0,
+        "rep_name": "Willie Preston",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/preston.jpg"
+    },
+    "17": {
+        "count": 1289,
+        "revenue": 408393978.0,
+        "assets": 784689053.0,
+        "rep_name": "Elgie Sims",
+        "rep_party": "Democratic",
+        "rep_term": "January 26, 2018",
+        "rep_photo": "images/sims.jpg"
+    },
+    "18": {
+        "count": 1050,
+        "revenue": 1115647632.0,
+        "assets": 2182121164.0,
+        "rep_name": "William Cunningham",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2013",
+        "rep_photo": "images/cunningham.jpg"
+    },
+    "19": {
+        "count": 1241,
+        "revenue": 1430237929.0,
+        "assets": 3145212397.0,
+        "rep_name": "Michael Hastings",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2013",
+        "rep_photo": "images/hastings.jpg"
+    },
+    "2": {
+        "count": 622,
+        "revenue": 700376061.0,
+        "assets": 1763031261.0,
+        "rep_name": "Omar Aquino",
+        "rep_party": "Democratic",
+        "rep_term": "July 1, 2016",
+        "rep_photo": "images/aquino.jpg"
+    },
+    "20": {
+        "count": 598,
+        "revenue": 278061874.0,
+        "assets": 508400747.0,
+        "rep_name": "Graciela Guzm\u00e1n",
+        "rep_party": "Democratic",
+        "rep_term": "January 8, 2025",
+        "rep_photo": "images/guzm\u00e1n.jpg"
+    },
+    "21": {
+        "count": 1546,
+        "revenue": 2567429759.0,
+        "assets": 5677023964.0,
+        "rep_name": "Laura Ellman",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2019",
+        "rep_photo": "images/ellman.jpg"
+    },
+    "22": {
+        "count": 602,
+        "revenue": 299804439.0,
+        "assets": 840896443.0,
+        "rep_name": "Cristina Castro",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2017",
+        "rep_photo": "images/castro.jpg"
+    },
+    "23": {
+        "count": 1172,
+        "revenue": 13109556905.0,
+        "assets": 36200615068.0,
+        "rep_name": "Suzy Glowiak",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2019",
+        "rep_photo": "images/glowiak.jpg"
+    },
+    "24": {
+        "count": 1279,
+        "revenue": 2715100835.0,
+        "assets": 5938809098.0,
+        "rep_name": "Seth Lewis",
+        "rep_party": "Republican",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/lewis.jpg"
+    },
+    "25": {
+        "count": 824,
+        "revenue": 604166501.0,
+        "assets": 1494970981.0,
+        "rep_name": "Karina Villa",
+        "rep_party": "Democratic",
+        "rep_term": "January 13, 2021",
+        "rep_photo": "images/villa.jpg"
+    },
+    "26": {
+        "count": 1232,
+        "revenue": 437303643.0,
+        "assets": 1351295253.0,
+        "rep_name": "Darby Hills",
+        "rep_party": "Republican",
+        "rep_term": "February 28, 2025",
+        "rep_photo": "images/hills.jpg"
+    },
+    "27": {
+        "count": 904,
+        "revenue": 6825764836.0,
+        "assets": 12133456188.0,
+        "rep_name": "Mark L. Walker",
+        "rep_party": "Democratic",
+        "rep_term": "May 11, 2024",
+        "rep_photo": "images/walker.jpg"
+    },
+    "28": {
+        "count": 1286,
+        "revenue": 7227377505.0,
+        "assets": 20374326593.0,
+        "rep_name": "Laura Murphy",
+        "rep_party": "Democratic",
+        "rep_term": "October 5, 2015",
+        "rep_photo": "images/murphy.jpg"
+    },
+    "29": {
+        "count": 1691,
+        "revenue": 2099461304.0,
+        "assets": 9974495205.0,
+        "rep_name": "Julie Morrison",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2013",
+        "rep_photo": "images/morrison.jpg"
+    },
+    "3": {
+        "count": 4801,
+        "revenue": 18688585778.0,
+        "assets": 58730176225.0,
+        "rep_name": "Mattie Hunter",
+        "rep_party": "Democratic",
+        "rep_term": "January 8, 2003",
+        "rep_photo": "images/hunter.jpg"
+    },
+    "30": {
+        "count": 829,
+        "revenue": 764492777.0,
+        "assets": 7341726850.0,
+        "rep_name": "Adriane Johnson",
+        "rep_party": "Democratic",
+        "rep_term": "October 11, 2020",
+        "rep_photo": "images/johnson.jpg"
+    },
+    "31": {
+        "count": 694,
+        "revenue": 435264477.0,
+        "assets": 5652781168.0,
+        "rep_name": "Mary Edly-Allen",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/edly-allen.jpg"
+    },
+    "32": {
+        "count": 809,
+        "revenue": 177446476.0,
+        "assets": 334315382.0,
+        "rep_name": "Craig Wilcox",
+        "rep_party": "Republican",
+        "rep_term": "October 1, 2018",
+        "rep_photo": "images/wilcox.jpg"
+    },
+    "33": {
+        "count": 952,
+        "revenue": 691658017.0,
+        "assets": 2481843516.0,
+        "rep_name": "Don DeWitte",
+        "rep_party": "Republican",
+        "rep_term": "January 9, 2019",
+        "rep_photo": "images/dewitte.jpg"
+    },
+    "34": {
+        "count": 1069,
+        "revenue": 1684995483.0,
+        "assets": 3181265167.0,
+        "rep_name": "Steve Stadelman",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2013",
+        "rep_photo": "images/stadelman.jpg"
+    },
+    "35": {
+        "count": 815,
+        "revenue": 139917651.0,
+        "assets": 593002202.0,
+        "rep_name": "Dave Syverson",
+        "rep_party": "Republican",
+        "rep_term": "January 13, 1993",
+        "rep_photo": "images/syverson.jpg"
+    },
+    "36": {
+        "count": 2188,
+        "revenue": 4411822701.0,
+        "assets": 28146686888.0,
+        "rep_name": "Michael Halpin",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/halpin.jpg"
+    },
+    "37": {
+        "count": 1451,
+        "revenue": 602676662.0,
+        "assets": 1358682726.0,
+        "rep_name": "Li Arellano Jr.",
+        "rep_party": "Republican",
+        "rep_term": "January 8, 2025",
+        "rep_photo": "images/jr..jpg"
+    },
+    "38": {
+        "count": 1213,
+        "revenue": 592462712.0,
+        "assets": 1566191573.0,
+        "rep_name": "Sue Rezin",
+        "rep_party": "Republican",
+        "rep_term": "December 11, 2010",
+        "rep_photo": "images/rezin.jpg"
+    },
+    "39": {
+        "count": 1122,
+        "revenue": 2599082029.0,
+        "assets": 23467930281.0,
+        "rep_name": "Don Harmon",
+        "rep_party": "Democratic",
+        "rep_term": "January 8, 2003",
+        "rep_photo": "images/harmon.jpg"
+    },
+    "4": {
+        "count": 1354,
+        "revenue": 6681724180.0,
+        "assets": 17143260759.0,
+        "rep_name": "Kimberly Lightford",
+        "rep_party": "Democratic",
+        "rep_term": "November 20, 1998",
+        "rep_photo": "images/lightford.jpg"
+    },
+    "40": {
+        "count": 1067,
+        "revenue": 909608285.0,
+        "assets": 1916783719.0,
+        "rep_name": "Patrick Joyce",
+        "rep_party": "Democratic",
+        "rep_term": "November 8, 2019",
+        "rep_photo": "images/joyce.jpg"
+    },
+    "41": {
+        "count": 1107,
+        "revenue": 1131700664.0,
+        "assets": 4164223077.0,
+        "rep_name": "John Curran",
+        "rep_party": "Republican",
+        "rep_term": "July 23, 2017",
+        "rep_photo": "images/curran.jpg"
+    },
+    "42": {
+        "count": 863,
+        "revenue": 1772738801.0,
+        "assets": 2973615218.0,
+        "rep_name": "Linda Holmes",
+        "rep_party": "Democratic",
+        "rep_term": "January 10, 2007",
+        "rep_photo": "images/holmes.jpg"
+    },
+    "43": {
+        "count": 888,
+        "revenue": 638420357.0,
+        "assets": 2162230592.0,
+        "rep_name": "Rachel Ventura",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/ventura.jpg"
+    },
+    "44": {
+        "count": 1206,
+        "revenue": 557203550.0,
+        "assets": 2602258478.0,
+        "rep_name": "Sally Turner",
+        "rep_party": "Republican",
+        "rep_term": "January 25, 2021",
+        "rep_photo": "images/turner.jpg"
+    },
+    "45": {
+        "count": 1155,
+        "revenue": 1289765423.0,
+        "assets": 3556582520.0,
+        "rep_name": "Andrew Chesney",
+        "rep_party": "Republican",
+        "rep_term": "December 5, 2018",
+        "rep_photo": "images/chesney.jpg"
+    },
+    "46": {
+        "count": 1537,
+        "revenue": 6357582235.0,
+        "assets": 11457129589.0,
+        "rep_name": "Dave Koehler",
+        "rep_party": "Democratic",
+        "rep_term": "December 3, 2006",
+        "rep_photo": "images/koehler.jpg"
+    },
+    "47": {
+        "count": 1238,
+        "revenue": 958599370.0,
+        "assets": 8832255850.0,
+        "rep_name": "Neil Anderson",
+        "rep_party": "Republican",
+        "rep_term": "January 15, 2015",
+        "rep_photo": "images/anderson.jpg"
+    },
+    "48": {
+        "count": 2259,
+        "revenue": 7352817898.0,
+        "assets": 12349761826.0,
+        "rep_name": "Doris Turner",
+        "rep_party": "Democratic",
+        "rep_term": "February 6, 2021",
+        "rep_photo": "images/turner.jpg"
+    },
+    "49": {
+        "count": 696,
+        "revenue": 1114674362.0,
+        "assets": 1754580907.0,
+        "rep_name": "Meg Loughran Cappel",
+        "rep_party": "Democratic",
+        "rep_term": "December 10, 2020",
+        "rep_photo": "images/cappel.jpg"
+    },
+    "5": {
+        "count": 2319,
+        "revenue": 9503215920.0,
+        "assets": 18338720996.0,
+        "rep_name": "Lakesia Collins",
+        "rep_party": "Democratic",
+        "rep_term": "August 16, 2023",
+        "rep_photo": "images/collins.jpg"
+    },
+    "50": {
+        "count": 1504,
+        "revenue": 1380943281.0,
+        "assets": 2852995657.0,
+        "rep_name": "Jil Tracy",
+        "rep_party": "Republican",
+        "rep_term": "January 11, 2017",
+        "rep_photo": "images/tracy.jpg"
+    },
+    "51": {
+        "count": 1397,
+        "revenue": 1211046961.0,
+        "assets": 2743539616.0,
+        "rep_name": "Chapin Rose",
+        "rep_party": "Republican",
+        "rep_term": "January 9, 2013",
+        "rep_photo": "images/rose.jpg"
+    },
+    "52": {
+        "count": 1398,
+        "revenue": 5223571852.0,
+        "assets": 12947546770.0,
+        "rep_name": "Paul Faraci",
+        "rep_party": "Democratic",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/faraci.jpg"
+    },
+    "53": {
+        "count": 1201,
+        "revenue": 1113892490.0,
+        "assets": 1343202063.0,
+        "rep_name": "Chris Balkema",
+        "rep_party": "Republican",
+        "rep_term": "January 8, 2025",
+        "rep_photo": "images/balkema.jpg"
+    },
+    "54": {
+        "count": 1367,
+        "revenue": 541351396.0,
+        "assets": 1251569553.0,
+        "rep_name": "Steve McClure",
+        "rep_party": "Republican",
+        "rep_term": "January 9, 2019",
+        "rep_photo": "images/mcclure.jpg"
+    },
+    "55": {
+        "count": 1279,
+        "revenue": 516716127.0,
+        "assets": 2644773783.0,
+        "rep_name": "Jason Plummer",
+        "rep_party": "Republican",
+        "rep_term": "January 9, 2019",
+        "rep_photo": "images/plummer.jpg"
+    },
+    "56": {
+        "count": 1231,
+        "revenue": 866346015.0,
+        "assets": 2295298323.0,
+        "rep_name": "Erica Harriss",
+        "rep_party": "Republican",
+        "rep_term": "January 11, 2023",
+        "rep_photo": "images/harriss.jpg"
+    },
+    "57": {
+        "count": 1273,
+        "revenue": 797734115.0,
+        "assets": 1223453892.0,
+        "rep_name": "Christopher Belt",
+        "rep_party": "Democratic",
+        "rep_term": "January 9, 2019",
+        "rep_photo": "images/belt.jpg"
+    },
+    "58": {
+        "count": 1482,
+        "revenue": 615419442.0,
+        "assets": 1101724259.0,
+        "rep_name": "Terri Bryant",
+        "rep_party": "Republican",
+        "rep_term": "January 13, 2021",
+        "rep_photo": "images/bryant.jpg"
+    },
+    "59": {
+        "count": 1364,
+        "revenue": 1788284754.0,
+        "assets": 4324155622.0,
+        "rep_name": "Dale Fowler",
+        "rep_party": "Republican",
+        "rep_term": "January 11, 2017",
+        "rep_photo": "images/fowler.jpg"
+    },
+    "6": {
+        "count": 1062,
+        "revenue": 1071195285.0,
+        "assets": 5050033263.0,
+        "rep_name": "Sara Feigenholtz",
+        "rep_party": "Democratic",
+        "rep_term": "January 21, 2020",
+        "rep_photo": "images/feigenholtz.jpg"
+    },
+    "7": {
+        "count": 1023,
+        "revenue": 1308788987.0,
+        "assets": 2369651673.0,
+        "rep_name": "Mike Simmons",
+        "rep_party": "Democratic",
+        "rep_term": "February 6, 2021",
+        "rep_photo": "images/simmons.jpg"
+    },
+    "8": {
+        "count": 1250,
+        "revenue": 1111242157.0,
+        "assets": 4338891942.0,
+        "rep_name": "Ram Villivalam",
+        "rep_party": "Democratic",
+        "rep_term": "January 5, 2019",
+        "rep_photo": "images/villivalam.jpg"
+    },
+    "9": {
+        "count": 1857,
+        "revenue": 6078012537.0,
+        "assets": 31391417029.0,
+        "rep_name": "Laura Fine",
+        "rep_party": "Democratic",
+        "rep_term": "January 6, 2019",
+        "rep_photo": "images/fine.jpg"
+    }
+}
