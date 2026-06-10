@@ -56,6 +56,21 @@
             box-shadow: 0 0 8px rgba(0,0,0,0.6); color: white; font-size: 13px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
         }
+
+        /* Smart Cluster Overrides matching our application colors */
+        .cluster-single-style {
+            background-color: rgba(52, 152, 219, 0.9); border: 3px solid rgba(52, 152, 219, 0.4);
+            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .cluster-multi-style {
+            background-color: rgba(230, 126, 34, 0.9); border: 3px solid rgba(230, 126, 34, 0.4);
+            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .cluster-mega-style {
+            background-color: rgba(231, 76, 60, 0.9); border: 4px solid rgba(231, 76, 60, 0.4);
+            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -166,11 +181,40 @@
         let currentBoundaryLayer = null;
         let activeAggregates = null;
         let allNonprofitData = []; 
-        
-        // SEARCH DICTIONARY INITIALIZATION
         const markerDictionary = {}; 
 
-        const markerClusterGroup = L.markerClusterGroup({ chunkedLoading: true, maxClusterRadius: 50 });
+        // SMART RE-AGGREGATED CLUSTERING ENGINE
+        const markerClusterGroup = L.markerClusterGroup({ 
+            chunkedLoading: true, 
+            maxClusterRadius: 50,
+            iconCreateFunction: function(cluster) {
+                const childMarkers = cluster.getAllChildMarkers();
+                let totalNonprofitsInside = 0;
+
+                // Loop over clustered markers and sum their true internal volumes
+                childMarkers.forEach(marker => {
+                    totalNonprofitsInside += (marker.nonprofitCount || 1);
+                });
+
+                // Assign the appropriate aesthetic tier to the group cluster
+                let clusterClass = 'cluster-single-style';
+                let size = 30;
+
+                if (totalNonprofitsInside >= 15) {
+                    clusterClass = 'cluster-mega-style';
+                    size = 44;
+                } else if (totalNonprofitsInside > 1) {
+                    clusterClass = 'cluster-multi-style';
+                    size = 36;
+                }
+
+                return L.divIcon({
+                    html: `<div style="line-height: ${size}px; width: 100%; height: 100%; font-size: 12px;">${totalNonprofitsInside.toLocaleString()}</div>`,
+                    className: clusterClass,
+                    iconSize: [size, size]
+                });
+            }
+        });
 
         function formatCurrency(num) {
             if (num >= 1.0e9) return "$" + (num / 1.0e9).toFixed(2) + " Billion";
@@ -179,8 +223,7 @@
             return "$" + num.toLocaleString();
         }
 
-        // Parse local CSV pins
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=14", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=15", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -194,7 +237,6 @@
             const markers = [];
             const groupedData = {};
 
-            // PHASE 1: Group Strictly by Coordinate (Latitude & Longitude only)
             for (let i = 0; i < allNonprofitData.length; i++) {
                 const row = allNonprofitData[i];
                 const subsection = row.SUBSECTION || "Unknown";
@@ -234,11 +276,10 @@
                 }
             }
 
-            // PHASE 2: Render Standard Popups vs. Mega-Nodes
             for (const groupKey in groupedData) {
                 const group = groupedData[groupKey];
                 
-                // For a single organization
+                // 1. Single Entity Marker
                 if (group.count === 1) {
                     const inst = group.instances[0];
                     const popupHTML = `
@@ -252,11 +293,12 @@
                     const customIcon = L.divIcon({ className: 'pin-single', iconSize: [12, 12] });
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
                     
+                    marker.nonprofitCount = 1; // Inject count data for the cluster engine
                     markers.push(marker);
                     markerDictionary[inst.name.toLowerCase()] = marker;
                 } 
                 
-                // For 2 to 14 organizations
+                // 2. Standard Multi-Entity Marker (2 - 14)
                 else if (group.count > 1 && group.count < 15) {
                     let popupHTML = `
                         <div class="popup-title">Multi-Entity Location (${group.count})</div>
@@ -267,7 +309,7 @@
                             <div style="max-height: 150px; overflow-y: auto; font-size: 11px; background: #f9f9f9; padding: 5px; border: 1px solid #eee;">
                     `;
                     
-                    group.instances.forEach((inst, idx) => {
+                    group.instances.forEach((inst) => {
                         popupHTML += `
                             <div style="margin-bottom: 4px; border-bottom: 1px dotted #ccc; padding-bottom: 4px;">
                                 <b>${inst.name}</b><br>
@@ -285,11 +327,12 @@
                     });
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
                     
+                    marker.nonprofitCount = group.count; // Inject count data for the cluster engine
                     markers.push(marker);
                     group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
                 }
 
-                // For 15+ organizations (MEGA-NODES)
+                // 3. Mega Nodes (15+)
                 else {
                     const customIcon = L.divIcon({ 
                         className: 'pin-mega', 
@@ -298,7 +341,8 @@
                     });
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon });
                     
-                    // Add a custom click event instead of a popup
+                    marker.nonprofitCount = group.count; // Inject count data for the cluster engine
+                    
                     marker.on('click', function(e) {
                         L.DomEvent.stopPropagation(e); 
                         
@@ -347,13 +391,12 @@
         document.getElementById('type-filter').addEventListener('change', renderPins);
         document.getElementById('revenue-filter').addEventListener('change', renderPins);
 
-        // Add an event listener to the map to clear the Mega-Node ledger when clicking away
         map.on('click', function() {
             let existingLedger = document.getElementById('mega-node-ledger');
             if (existingLedger) existingLedger.remove();
         });
 
-        // Boundary Rendering and Sidebar Update Engine
+        // Boundary Rendering Engine
         document.getElementById('layer-select').addEventListener('change', function(e) {
             const selectedLayer = e.target.value;
             if (currentBoundaryLayer) { map.removeLayer(currentBoundaryLayer); currentBoundaryLayer = null; }
@@ -366,7 +409,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=14`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=15`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
@@ -435,7 +478,7 @@
                 });
         });
 
-        // SEARCH BAR LOGIC
+        // Search Bar Implementation
         const searchInput = document.getElementById('map-search');
         const searchResults = document.getElementById('search-results');
 
