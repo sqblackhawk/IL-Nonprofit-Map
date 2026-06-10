@@ -41,36 +41,11 @@
         #rep-party { font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         #rep-term { font-size: 12px; color: #7f8c8d; margin-top: 2px; }
 
-        /* Custom Map Pin Styles */
-        .pin-single {
-            background-color: #3498db; border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 0 4px rgba(0,0,0,0.4);
-        }
-        .pin-multi {
-            background-color: #e67e22; border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 0 6px rgba(0,0,0,0.4); color: white; font-size: 11px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .pin-mega {
-            background-color: #e74c3c; border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 0 8px rgba(0,0,0,0.6); color: white; font-size: 13px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Smart Cluster Overrides matching our application colors */
-        .cluster-single-style {
-            background-color: rgba(52, 152, 219, 0.9); border: 3px solid rgba(52, 152, 219, 0.4);
-            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
-        }
-        .cluster-multi-style {
-            background-color: rgba(230, 126, 34, 0.9); border: 3px solid rgba(230, 126, 34, 0.4);
-            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
-        }
-        .cluster-mega-style {
-            background-color: rgba(231, 76, 60, 0.9); border: 4px solid rgba(231, 76, 60, 0.4);
-            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
+        /* Financial Impact Marker Styles */
+        .tier-1 { background-color: rgba(149, 165, 166, 0.9); border: 2px solid #7f8c8d; border-radius: 50%; color: white; font-size: 11px; font-weight: bold; box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+        .tier-2 { background-color: rgba(46, 204, 113, 0.9); border: 2px solid #27ae60; border-radius: 50%; color: white; font-size: 12px; font-weight: bold; box-shadow: 0 0 5px rgba(0,0,0,0.4); }
+        .tier-3 { background-color: rgba(52, 152, 219, 0.9); border: 2px solid #2980b9; border-radius: 50%; color: white; font-size: 14px; font-weight: bold; box-shadow: 0 0 8px rgba(52,152,219,0.5); }
+        .tier-4 { background-color: rgba(155, 89, 182, 0.95); border: 3px solid #8e44ad; border-radius: 50%; color: white; font-size: 16px; font-weight: bold; box-shadow: 0 0 12px rgba(155,89,182,0.7); }
     </style>
 </head>
 <body>
@@ -181,37 +156,42 @@
         let currentBoundaryLayer = null;
         let activeAggregates = null;
         let allNonprofitData = []; 
-        let highlightedSearchName = null; // Global flag to route search focus
+        let highlightedSearchName = null; 
         const markerDictionary = {}; 
 
-        // SMART RE-AGGREGATED CLUSTERING ENGINE
+        function getIconByRevenue(revenue, countText) {
+            let tierClass = 'tier-1';
+            let size = 24;
+
+            if (revenue >= 10000000) { // $10M+
+                tierClass = 'tier-4'; size = 52;
+            } else if (revenue >= 1000000) { // $1M+
+                tierClass = 'tier-3'; size = 42;
+            } else if (revenue >= 100000) { // $100k+
+                tierClass = 'tier-2'; size = 32;
+            }
+
+            return L.divIcon({
+                html: `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${countText}</div>`,
+                className: tierClass,
+                iconSize: [size, size]
+            });
+        }
+
         const markerClusterGroup = L.markerClusterGroup({ 
             chunkedLoading: true, 
             maxClusterRadius: 50,
             iconCreateFunction: function(cluster) {
                 const childMarkers = cluster.getAllChildMarkers();
+                let totalRev = 0;
                 let totalNonprofitsInside = 0;
 
                 childMarkers.forEach(marker => {
+                    totalRev += (marker.nonprofitRevenue || 0);
                     totalNonprofitsInside += (marker.nonprofitCount || 1);
                 });
 
-                let clusterClass = 'cluster-single-style';
-                let size = 30;
-
-                if (totalNonprofitsInside >= 15) {
-                    clusterClass = 'cluster-mega-style';
-                    size = 44;
-                } else if (totalNonprofitsInside > 1) {
-                    clusterClass = 'cluster-multi-style';
-                    size = 36;
-                }
-
-                return L.divIcon({
-                    html: `<div style="line-height: ${size}px; width: 100%; height: 100%; font-size: 12px;">${totalNonprofitsInside.toLocaleString()}</div>`,
-                    className: clusterClass,
-                    iconSize: [size, size]
-                });
+                return getIconByRevenue(totalRev, totalNonprofitsInside > 1 ? totalNonprofitsInside.toLocaleString() : "");
             }
         });
 
@@ -222,7 +202,7 @@
             return "$" + num.toLocaleString();
         }
 
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=16", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=17", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -252,7 +232,6 @@
                     const name = (row.NAME || "Unknown").toUpperCase().trim();
                     const groupKey = `${lat}_${lon}`; 
                     
-                    // Fallback lookup for shared location text / street names
                     const addressStr = row.STREET || row.ADDRESS || row.LOCATION || (row.CITY ? `${row.CITY}, IL` : "");
 
                     if (!groupedData[groupKey]) {
@@ -298,10 +277,11 @@
                             <b>Total Assets:</b> ${formatCurrency(inst.assets)}
                         </div>
                     `;
-                    const customIcon = L.divIcon({ className: 'pin-single', iconSize: [12, 12] });
+                    const customIcon = getIconByRevenue(inst.revenue, "");
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
                     
                     marker.nonprofitCount = 1;
+                    marker.nonprofitRevenue = inst.revenue;
                     markers.push(marker);
                     markerDictionary[inst.name.toLowerCase()] = marker;
                 } 
@@ -330,14 +310,11 @@
                     
                     popupHTML += `</div></div>`;
                     
-                    const customIcon = L.divIcon({ 
-                        className: 'pin-multi', 
-                        html: group.count,
-                        iconSize: [24, 24] 
-                    });
+                    const customIcon = getIconByRevenue(group.totalRevenue, group.count);
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
                     
                     marker.nonprofitCount = group.count;
+                    marker.nonprofitRevenue = group.totalRevenue;
                     markers.push(marker);
                     
                     marker.on('click', function() { highlightedSearchName = null; });
@@ -346,19 +323,15 @@
 
                 // 3. Mega Nodes (15+)
                 else {
-                    const customIcon = L.divIcon({ 
-                        className: 'pin-mega', 
-                        html: group.count,
-                        iconSize: [32, 32] 
-                    });
+                    const customIcon = getIconByRevenue(group.totalRevenue, group.count);
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon });
                     
                     marker.nonprofitCount = group.count;
+                    marker.nonprofitRevenue = group.totalRevenue;
                     
                     marker.on('click', function(e) {
                         L.DomEvent.stopPropagation(e); 
                         
-                        // Set the title directly to the shared physical address string
                         const headlineTitle = group.address ? `${group.address}` : `High Density Location`;
                         document.getElementById('sidebar-title').innerText = headlineTitle;
                         
@@ -374,7 +347,6 @@
                         let existingLedger = document.getElementById('mega-node-container');
                         if (existingLedger) existingLedger.remove();
 
-                        // Render responsive inner ledger with local search filtering built in
                         let ledgerHTML = `
                             <div id="mega-node-container" style="margin-top: 15px;">
                                 <input type="text" id="ledger-filter" placeholder="Filter these ${group.count} entities..." style="width: 100%; padding: 6px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 8px; font-size: 13px;">
@@ -396,7 +368,6 @@
                         ledgerHTML += `</div></div>`;
                         document.getElementById('sidebar-stats').insertAdjacentHTML('beforeend', ledgerHTML);
 
-                        // Attach instant input listener for live ledger searching
                         document.getElementById('ledger-filter').addEventListener('input', function(filterEvt) {
                             const queryStr = filterEvt.target.value.toLowerCase();
                             const rows = document.querySelectorAll('.ledger-item');
@@ -406,7 +377,6 @@
                             });
                         });
 
-                        // Programmatic scroll-to routing for search targets
                         if (highlightedSearchName) {
                             const scrollTarget = document.querySelector(`[data-name="${highlightedSearchName}"]`);
                             if (scrollTarget) {
@@ -447,7 +417,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=16`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=17`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
@@ -547,10 +517,9 @@
 
                     resultItem.onclick = function() {
                         const targetMarker = markerDictionary[matchName];
-                        highlightedSearchName = matchName; // Save search target context
+                        highlightedSearchName = matchName; 
                         
                         markerClusterGroup.zoomToShowLayer(targetMarker, function() {
-                            // If it has a standard popup bound, open it; otherwise fire custom click routine
                             if (targetMarker.getPopup()) {
                                 targetMarker.openPopup();
                             } else {
