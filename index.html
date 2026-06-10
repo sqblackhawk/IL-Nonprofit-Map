@@ -46,6 +46,10 @@
         .tier-2 { background-color: rgba(46, 204, 113, 0.9); border: 2px solid #27ae60; border-radius: 50%; color: white; font-size: 12px; font-weight: bold; box-shadow: 0 0 5px rgba(0,0,0,0.4); }
         .tier-3 { background-color: rgba(52, 152, 219, 0.9); border: 2px solid #2980b9; border-radius: 50%; color: white; font-size: 14px; font-weight: bold; box-shadow: 0 0 8px rgba(52,152,219,0.5); }
         .tier-4 { background-color: rgba(155, 89, 182, 0.95); border: 3px solid #8e44ad; border-radius: 50%; color: white; font-size: 16px; font-weight: bold; box-shadow: 0 0 12px rgba(155,89,182,0.7); }
+
+        /* Legend Styles */
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #2c3e50; }
+        .legend-color { width: 18px; height: 18px; border-radius: 50%; margin-right: 10px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -113,6 +117,14 @@
             <option value="100000">Significant (> $100k)</option>
             <option value="1000000">Major Players (> $1M)</option>
         </select>
+
+        <hr>
+
+        <h3>Map Legend</h3>
+        <div class="legend-item"><span class="legend-color" style="background: rgba(149, 165, 166, 0.9); border: 2px solid #7f8c8d;"></span> Micro ($0 - $100k)</div>
+        <div class="legend-item"><span class="legend-color" style="background: rgba(46, 204, 113, 0.9); border: 2px solid #27ae60;"></span> Community ($100k - $1M)</div>
+        <div class="legend-item"><span class="legend-color" style="background: rgba(52, 152, 219, 0.9); border: 2px solid #2980b9;"></span> Institutional ($1M - $10M)</div>
+        <div class="legend-item"><span class="legend-color" style="background: rgba(155, 89, 182, 0.95); border: 2px solid #8e44ad;"></span> Anchor ($10M+)</div>
     </div>
 
     <div id="sidebar">
@@ -202,7 +214,7 @@
             return "$" + num.toLocaleString();
         }
 
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=17", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=18", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -417,7 +429,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=17`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=18`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
