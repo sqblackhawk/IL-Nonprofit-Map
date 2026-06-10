@@ -68,12 +68,33 @@
         <h3>2. Filter Map Pins</h3>
         <select id="type-filter">
             <option value="all">All Nonprofit Types</option>
-            <option value="3">501(c)(3) - Charities</option>
-            <option value="4">501(c)(4) - Civic Leagues</option>
-            <option value="5">501(c)(5) - Labor & Ag Orgs</option>
+            <option value="1">501(c)(1) - Federal Corporations</option>
+            <option value="2">501(c)(2) - Title Holding Corps</option>
+            <option value="3">501(c)(3) - Charities & Churches</option>
+            <option value="4">501(c)(4) - Social Welfare/Civic</option>
+            <option value="5">501(c)(5) - Labor & Agricultural</option>
             <option value="6">501(c)(6) - Business Leagues</option>
             <option value="7">501(c)(7) - Social Clubs</option>
             <option value="8">501(c)(8) - Fraternal Beneficiary</option>
+            <option value="9">501(c)(9) - Employee Beneficiary</option>
+            <option value="10">501(c)(10) - Domestic Fraternal</option>
+            <option value="11">501(c)(11) - Teachers' Retirement</option>
+            <option value="12">501(c)(12) - Benevolent Life/Mutual</option>
+            <option value="13">501(c)(13) - Cemetery Companies</option>
+            <option value="14">501(c)(14) - Credit Unions</option>
+            <option value="15">501(c)(15) - Mutual Insurance</option>
+            <option value="16">501(c)(16) - Crop Finance</option>
+            <option value="17">501(c)(17) - Supplemental Unemployment</option>
+            <option value="18">501(c)(18) - Employee Funded Pension</option>
+            <option value="19">501(c)(19) - Veterans Organizations</option>
+            <option value="21">501(c)(21) - Black Lung Benefit</option>
+            <option value="22">501(c)(22) - Withdrawal Liability</option>
+            <option value="23">501(c)(23) - Veterans (Pre-1880)</option>
+            <option value="25">501(c)(25) - Multi-Parent Title Holding</option>
+            <option value="26">501(c)(26) - State High-Risk Health</option>
+            <option value="27">501(c)(27) - State Workers' Comp</option>
+            <option value="28">501(c)(28) - Railroad Retirement</option>
+            <option value="29">501(c)(29) - CO-OP Health Insurance</option>
         </select>
         
         <hr>
@@ -141,8 +162,8 @@
             return "$" + num.toLocaleString();
         }
 
-        // Parse local CSV pins
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=9", {
+        // Parse local CSV pins with bumped cache version
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=10", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -317,7 +338,8 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=9`)
+            // Updated cache version to 10
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=10`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
