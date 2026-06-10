@@ -132,12 +132,12 @@
         }
 
         // Parse local CSV pins
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=5", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=8", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
 
-       function renderPins() {
+        function renderPins() {
             markerClusterGroup.clearLayers();
             for (let key in markerDictionary) delete markerDictionary[key];
 
@@ -284,60 +284,13 @@
             markerClusterGroup.addLayers(markers).addTo(map);
         }
 
+        document.getElementById('type-filter').addEventListener('change', renderPins);
+
         // Add an event listener to the map to clear the Mega-Node ledger when clicking away
         map.on('click', function() {
             let existingLedger = document.getElementById('mega-node-ledger');
             if (existingLedger) existingLedger.remove();
         });
-
-            // Phase 2: Render the aggregated data into physical map markers
-            for (const groupKey in groupedData) {
-                const group = groupedData[groupKey];
-                let popupHTML = `<div class="popup-title">${group.name}</div>`;
-
-                if (group.count === 1) {
-                    // Standard single-entity popup
-                    const inst = group.instances[0];
-                    popupHTML += `
-                        <div class="popup-data">
-                            <b>Classification:</b> 501(c)(${inst.subsection})<br>
-                            <b>Annual Revenue:</b> ${formatCurrency(inst.revenue)}<br>
-                            <b>Total Assets:</b> ${formatCurrency(inst.assets)}
-                        </div>
-                    `;
-                } else {
-                    // Aggregated multi-entity popup
-                    popupHTML += `
-                        <div class="popup-data">
-                            <b>Total Registered Entities:</b> ${group.count}<br>
-                            <b>Combined Revenue:</b> ${formatCurrency(group.totalRevenue)}<br>
-                            <b>Combined Assets:</b> ${formatCurrency(group.totalAssets)}
-                            <hr style="margin: 8px 0;">
-                            <div style="max-height: 120px; overflow-y: auto; font-size: 11px; background: #f9f9f9; padding: 5px; border: 1px solid #eee;">
-                    `;
-                    
-                    group.instances.forEach((inst, idx) => {
-                        popupHTML += `
-                            <div style="margin-bottom: 4px; border-bottom: 1px dotted #ccc; padding-bottom: 2px;">
-                                <b>Entity ${idx + 1}:</b> 501(c)(${inst.subsection})<br>
-                                Rev: ${formatCurrency(inst.revenue)} | Ast: ${formatCurrency(inst.assets)}
-                            </div>
-                        `;
-                    });
-                    
-                    popupHTML += `</div></div>`;
-                }
-
-                const marker = L.marker([group.lat, group.lon]).bindPopup(popupHTML);
-                markers.push(marker);
-                
-                // Add the consolidated pin to the Search Dictionary
-                markerDictionary[group.name.toLowerCase()] = marker;
-            }
-
-            markerClusterGroup.addLayers(markers).addTo(map);
-        }
-        document.getElementById('type-filter').addEventListener('change', renderPins);
 
         // Boundary Rendering and Sidebar Update Engine
         document.getElementById('layer-select').addEventListener('change', function(e) {
@@ -349,7 +302,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=5`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=8`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
