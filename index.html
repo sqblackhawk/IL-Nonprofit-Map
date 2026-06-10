@@ -189,15 +189,14 @@
         let highlightedSearchName = null; 
         const markerDictionary = {}; 
 
-        // SMART CLUSTERING ENGINE (Zoom-Responsive Rings)
+        // SMART CLUSTERING ENGINE (Aligned with Responsive Tiers)
         const markerClusterGroup = L.markerClusterGroup({ 
             chunkedLoading: true, 
             
-            // DYNAMIC RADIUS: Shrinks at state-level to show texture, expands at city-level to cluster cleanly
             maxClusterRadius: function(zoom) {
-                if (zoom <= 7) return 20;  // Statewide view: Lots of texture
-                if (zoom <= 10) return 35; // Regional view: Moderate clustering
-                return 50;                 // City street view: Normal clustering
+                if (zoom <= 7) return 20;  
+                if (zoom <= 10) return 35; 
+                return 50;                 
             },
 
             iconCreateFunction: function(cluster) {
@@ -209,12 +208,14 @@
                 });
 
                 let size = 30;
-                let cssClass = 'area-cluster';
+                let cssClass = 'cluster-single-style'; // Aligned with CSS Stylesheet
 
-                // Large geographic areas get the purple highlight ring
                 if (totalNonprofitsInside >= 100) {
-                    size = 38;
-                    cssClass = 'area-cluster area-cluster-large';
+                    size = 40;
+                    cssClass = 'cluster-mega-style';
+                } else if (totalNonprofitsInside >= 15) {
+                    size = 34;
+                    cssClass = 'cluster-multi-style';
                 }
 
                 return L.divIcon({
@@ -233,16 +234,14 @@
         }
 
         // REGEX ADDRESS SCRUBBER 
-        // Removes suites, floors, and PMBs to isolate the base building address
         function cleanAddressStr(rawAddr) {
             if (!rawAddr) return "";
             let cleaned = rawAddr.toUpperCase();
-            // Match boundaries for secondary units and strip everything after
             cleaned = cleaned.replace(/\b(STE|SUITE|FL|FLOOR|RM|ROOM|UNIT|APT|PMB|#)\b.*/, '').trim();
             return cleaned;
         }
 
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=22", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=23", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -273,7 +272,7 @@
                     const groupKey = `${lat}_${lon}`; 
                     
                     const rawAddressStr = row.STREET || row.ADDRESS || row.LOCATION || "";
-                    const cleanAddress = cleanAddressStr(rawAddressStr); // Apply the regex scrubber
+                    const cleanAddress = cleanAddressStr(rawAddressStr); 
 
                     if (!groupedData[groupKey]) {
                         groupedData[groupKey] = {
@@ -286,7 +285,6 @@
                             instances: []
                         };
                     } else if (cleanAddress && cleanAddress.length > 4 && cleanAddress.length < groupedData[groupKey].address.length) {
-                        // Shortest String Logic applied to Cleaned Addresses
                         const currentIsPO = groupedData[groupKey].address.includes("PO BOX");
                         const newIsPO = cleanAddress.includes("PO BOX");
                         
@@ -312,7 +310,6 @@
             for (const groupKey in groupedData) {
                 const group = groupedData[groupKey];
                 
-                // 1. Single Entity Marker (Small Dot)
                 if (group.count === 1) {
                     const inst = group.instances[0];
                     const popupHTML = `
@@ -331,8 +328,6 @@
                     markers.push(marker);
                     markerDictionary[inst.name.toLowerCase()] = marker;
                 } 
-                
-                // 2. Standard Multi-Entity Marker (2 - 14) (Medium Orange)
                 else if (group.count > 1 && group.count < 15) {
                     let popupHTML = `
                         <div class="popup-title">${group.address ? group.address : `Multi-Entity Location (${group.count})`}</div>
@@ -369,8 +364,6 @@
                     marker.on('click', function() { highlightedSearchName = null; });
                     group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
                 }
-
-                // 3. Mega Nodes 15+ (Large Red)
                 else {
                     const customIcon = L.divIcon({ 
                         className: 'pin-mega', 
@@ -455,7 +448,6 @@
             let existingLedger = document.getElementById('mega-node-container');
             if (existingLedger) existingLedger.remove();
             
-            // Re-show instructions when un-clicking
             document.getElementById('sidebar-stats').style.display = 'none';
             document.getElementById('sidebar-instructions').style.display = 'block';
             document.getElementById('sidebar-title').innerText = "District Impact Summary";
@@ -474,7 +466,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=22`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=23`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
