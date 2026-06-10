@@ -222,7 +222,7 @@
             return "$" + num.toLocaleString();
         }
 
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=19", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=20", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -252,7 +252,7 @@
                     const name = (row.NAME || "Unknown").toUpperCase().trim();
                     const groupKey = `${lat}_${lon}`; 
                     
-                    const addressStr = row.STREET || row.ADDRESS || row.LOCATION || (row.CITY ? `${row.CITY}, IL` : "");
+                    const addressStr = row.STREET || row.ADDRESS || row.LOCATION || "";
 
                     if (!groupedData[groupKey]) {
                         groupedData[groupKey] = {
@@ -264,10 +264,17 @@
                             address: addressStr,
                             instances: []
                         };
-                    }
-
-                    if (!groupedData[groupKey].address && addressStr) {
-                        groupedData[groupKey].address = addressStr;
+                    } else if (addressStr && addressStr.length > 4 && addressStr.length < groupedData[groupKey].address.length) {
+                        // SMART TITLING: Select the shortest valid address string to naturally drop PMBs/Suites
+                        const currentIsPO = groupedData[groupKey].address.includes("PO BOX");
+                        const newIsPO = addressStr.includes("PO BOX");
+                        
+                        // Prioritize real streets over PO Boxes if they exist at the same coordinate
+                        if (currentIsPO && !newIsPO) {
+                            groupedData[groupKey].address = addressStr; 
+                        } else if (!(!currentIsPO && newIsPO)) {
+                            groupedData[groupKey].address = addressStr; 
+                        }
                     }
 
                     groupedData[groupKey].count += 1;
@@ -442,7 +449,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=19`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=20`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
