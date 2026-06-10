@@ -137,22 +137,19 @@
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
 
-        function renderPins() {
+       function renderPins() {
             markerClusterGroup.clearLayers();
-            
-            // Clear the search dictionary when we re-render the pins
             for (let key in markerDictionary) delete markerDictionary[key];
 
             const filterValue = document.getElementById('type-filter').value;
             const markers = [];
             const groupedData = {};
 
-            // Phase 1: Aggregate the data mathematically
+            // PHASE 1: Group Strictly by Coordinate (Latitude & Longitude only)
             for (let i = 0; i < allNonprofitData.length; i++) {
                 const row = allNonprofitData[i];
                 const subsection = row.SUBSECTION || "Unknown";
                 
-                // Only aggregate pins that match the current UI filter
                 if (filterValue !== 'all' && String(subsection) !== filterValue) continue;
 
                 const lat = parseFloat(row.LATITUDE);
@@ -160,12 +157,10 @@
 
                 if (!isNaN(lat) && !isNaN(lon)) {
                     const name = (row.NAME || "Unknown").toUpperCase().trim();
-                    // Generate a unique dictionary key combining Name + Exact Coordinate
-                    const groupKey = `${name}_${lat}_${lon}`;
+                    const groupKey = `${lat}_${lon}`; // Removed Name from grouping logic
 
                     if (!groupedData[groupKey]) {
                         groupedData[groupKey] = {
-                            name: name,
                             lat: lat,
                             lon: lon,
                             count: 0,
@@ -179,12 +174,121 @@
                     groupedData[groupKey].totalRevenue += (parseFloat(row.REVENUE_AMT) || 0);
                     groupedData[groupKey].totalAssets += (parseFloat(row.ASSET_AMT) || 0);
                     groupedData[groupKey].instances.push({
+                        name: name,
                         subsection: subsection,
                         revenue: parseFloat(row.REVENUE_AMT) || 0,
                         assets: parseFloat(row.ASSET_AMT) || 0
                     });
                 }
             }
+
+            // PHASE 2: Render Standard Popups vs. Mega-Nodes
+            for (const groupKey in groupedData) {
+                const group = groupedData[groupKey];
+                
+                // For a single organization, show a standard clean popup
+                if (group.count === 1) {
+                    const inst = group.instances[0];
+                    const popupHTML = `
+                        <div class="popup-title">${inst.name}</div>
+                        <div class="popup-data">
+                            <b>Classification:</b> 501(c)(${inst.subsection})<br>
+                            <b>Annual Revenue:</b> ${formatCurrency(inst.revenue)}<br>
+                            <b>Total Assets:</b> ${formatCurrency(inst.assets)}
+                        </div>
+                    `;
+                    const marker = L.marker([group.lat, group.lon]).bindPopup(popupHTML);
+                    markers.push(marker);
+                    markerDictionary[inst.name.toLowerCase()] = marker;
+                } 
+                
+                // For 2 to 14 organizations, show a scrollable aggregated popup
+                else if (group.count > 1 && group.count < 15) {
+                    let popupHTML = `
+                        <div class="popup-title">Multi-Entity Location (${group.count})</div>
+                        <div class="popup-data">
+                            <b>Combined Revenue:</b> ${formatCurrency(group.totalRevenue)}<br>
+                            <b>Combined Assets:</b> ${formatCurrency(group.totalAssets)}
+                            <hr style="margin: 8px 0;">
+                            <div style="max-height: 150px; overflow-y: auto; font-size: 11px; background: #f9f9f9; padding: 5px; border: 1px solid #eee;">
+                    `;
+                    
+                    group.instances.forEach((inst, idx) => {
+                        popupHTML += `
+                            <div style="margin-bottom: 4px; border-bottom: 1px dotted #ccc; padding-bottom: 4px;">
+                                <b>${inst.name}</b><br>
+                                Rev: ${formatCurrency(inst.revenue)} | Ast: ${formatCurrency(inst.assets)}
+                            </div>
+                        `;
+                    });
+                    
+                    popupHTML += `</div></div>`;
+                    const marker = L.marker([group.lat, group.lon]).bindPopup(popupHTML);
+                    markers.push(marker);
+                    
+                    // Add all names to the search dictionary pointing to this one marker
+                    group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
+                }
+
+                // For 15+ organizations (MEGA-NODES), bypass the popup and hijack the Sidebar
+                else {
+                    const marker = L.marker([group.lat, group.lon]);
+                    
+                    // Add a custom click event instead of a popup
+                    marker.on('click', function(e) {
+                        L.DomEvent.stopPropagation(e); // Prevent map click from overriding
+                        
+                        // Hijack the Sidebar UI
+                        document.getElementById('sidebar-title').innerText = `High-Density Location: ${group.count} Entities`;
+                        document.getElementById('sidebar-instructions').style.display = 'none';
+                        document.getElementById('sidebar-stats').style.display = 'block';
+                        
+                        document.getElementById('stat-count').innerText = group.count.toLocaleString();
+                        document.getElementById('stat-revenue').innerText = formatCurrency(group.totalRevenue);
+                        document.getElementById('stat-assets').innerText = formatCurrency(group.totalAssets);
+                        
+                        // Hide the politician card since this is an address, not a district
+                        document.getElementById('politician-card').style.display = 'none';
+
+                        // Create a temporary scrollable ledger inside the sidebar
+                        let existingLedger = document.getElementById('mega-node-ledger');
+                        if (existingLedger) existingLedger.remove();
+
+                        let ledgerHTML = `<div id="mega-node-ledger" style="margin-top: 15px; max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #fdfdfd; font-size: 12px;">`;
+                        
+                        // For performance, only render the first 200 in the list to prevent UI lag, even in the sidebar
+                        const displayLimit = Math.min(group.count, 200);
+                        for(let i=0; i < displayLimit; i++) {
+                            const inst = group.instances[i];
+                            ledgerHTML += `
+                                <div style="margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+                                    <strong>${inst.name}</strong><br>
+                                    <span style="color: #555;">Rev: ${formatCurrency(inst.revenue)} | Ast: ${formatCurrency(inst.assets)}</span>
+                                </div>
+                            `;
+                        }
+                        
+                        if(group.count > 200) {
+                            ledgerHTML += `<div style="text-align: center; color: #888; margin-top: 5px;"><i>+ ${group.count - 200} more entities not displayed</i></div>`;
+                        }
+                        
+                        ledgerHTML += `</div>`;
+                        document.getElementById('sidebar-stats').insertAdjacentHTML('beforeend', ledgerHTML);
+                    });
+
+                    markers.push(marker);
+                    group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
+                }
+            }
+
+            markerClusterGroup.addLayers(markers).addTo(map);
+        }
+
+        // Add an event listener to the map to clear the Mega-Node ledger when clicking away
+        map.on('click', function() {
+            let existingLedger = document.getElementById('mega-node-ledger');
+            if (existingLedger) existingLedger.remove();
+        });
 
             // Phase 2: Render the aggregated data into physical map markers
             for (const groupKey in groupedData) {
