@@ -40,6 +40,22 @@
         #rep-name { font-size: 16px; font-weight: bold; color: #2c3e50; margin: 2px 0; }
         #rep-party { font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         #rep-term { font-size: 12px; color: #7f8c8d; margin-top: 2px; }
+
+        /* Custom Map Pin Styles */
+        .pin-single {
+            background-color: #3498db; border: 2px solid white; border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0,0,0,0.4);
+        }
+        .pin-multi {
+            background-color: #e67e22; border: 2px solid white; border-radius: 50%;
+            box-shadow: 0 0 6px rgba(0,0,0,0.4); color: white; font-size: 11px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pin-mega {
+            background-color: #e74c3c; border: 2px solid white; border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0,0,0,0.6); color: white; font-size: 13px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -164,7 +180,7 @@
         }
 
         // Parse local CSV pins
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=13", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=14", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -222,7 +238,7 @@
             for (const groupKey in groupedData) {
                 const group = groupedData[groupKey];
                 
-                // For a single organization, show a standard clean popup
+                // For a single organization
                 if (group.count === 1) {
                     const inst = group.instances[0];
                     const popupHTML = `
@@ -233,12 +249,14 @@
                             <b>Total Assets:</b> ${formatCurrency(inst.assets)}
                         </div>
                     `;
-                    const marker = L.marker([group.lat, group.lon]).bindPopup(popupHTML);
+                    const customIcon = L.divIcon({ className: 'pin-single', iconSize: [12, 12] });
+                    const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
+                    
                     markers.push(marker);
                     markerDictionary[inst.name.toLowerCase()] = marker;
                 } 
                 
-                // For 2 to 14 organizations, show a scrollable aggregated popup
+                // For 2 to 14 organizations
                 else if (group.count > 1 && group.count < 15) {
                     let popupHTML = `
                         <div class="popup-title">Multi-Entity Location (${group.count})</div>
@@ -259,21 +277,31 @@
                     });
                     
                     popupHTML += `</div></div>`;
-                    const marker = L.marker([group.lat, group.lon]).bindPopup(popupHTML);
-                    markers.push(marker);
                     
+                    const customIcon = L.divIcon({ 
+                        className: 'pin-multi', 
+                        html: group.count,
+                        iconSize: [24, 24] 
+                    });
+                    const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
+                    
+                    markers.push(marker);
                     group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
                 }
 
-                // For 15+ organizations (MEGA-NODES), bypass the popup and hijack the Sidebar
+                // For 15+ organizations (MEGA-NODES)
                 else {
-                    const marker = L.marker([group.lat, group.lon]);
+                    const customIcon = L.divIcon({ 
+                        className: 'pin-mega', 
+                        html: group.count,
+                        iconSize: [32, 32] 
+                    });
+                    const marker = L.marker([group.lat, group.lon], { icon: customIcon });
                     
                     // Add a custom click event instead of a popup
                     marker.on('click', function(e) {
-                        L.DomEvent.stopPropagation(e); // Prevent map click from overriding
+                        L.DomEvent.stopPropagation(e); 
                         
-                        // Hijack the Sidebar UI
                         document.getElementById('sidebar-title').innerText = `High-Density Location: ${group.count} Entities`;
                         document.getElementById('sidebar-instructions').style.display = 'none';
                         document.getElementById('sidebar-stats').style.display = 'block';
@@ -282,16 +310,13 @@
                         document.getElementById('stat-revenue').innerText = formatCurrency(group.totalRevenue);
                         document.getElementById('stat-assets').innerText = formatCurrency(group.totalAssets);
                         
-                        // Hide the politician card since this is an address, not a district
                         document.getElementById('politician-card').style.display = 'none';
 
-                        // CLEAR EXISTING LEDGER TO PREVENT DUPLICATES
                         let existingLedger = document.getElementById('mega-node-ledger');
                         if (existingLedger) existingLedger.remove();
 
                         let ledgerHTML = `<div id="mega-node-ledger" style="margin-top: 15px; max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #fdfdfd; font-size: 12px;">`;
                         
-                        // For performance, only render the first 200 in the list to prevent UI lag, even in the sidebar
                         const displayLimit = Math.min(group.count, 200);
                         for(let i=0; i < displayLimit; i++) {
                             const inst = group.instances[i];
@@ -336,13 +361,12 @@
             document.getElementById('sidebar-instructions').style.display = 'block';
             document.getElementById('sidebar-title').innerText = "District Impact Summary";
 
-            // BUG FIX: Clear ledger when changing map layers
             let existingLedger = document.getElementById('mega-node-ledger');
             if (existingLedger) existingLedger.remove();
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=13`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=14`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
@@ -360,7 +384,6 @@
                             layer.on('click', function(event) {
                                 L.DomEvent.stopPropagation(event);
                                 
-                                // BUG FIX: Clear ledger when clicking a district boundary
                                 let existingLedger = document.getElementById('mega-node-ledger');
                                 if (existingLedger) existingLedger.remove();
 
@@ -370,12 +393,10 @@
                                 if (activeAggregates && activeAggregates[idStr]) {
                                     const stats = activeAggregates[idStr];
                                     
-                                    // Set Financial Texts
                                     document.getElementById('stat-count').innerText = stats.count.toLocaleString();
                                     document.getElementById('stat-revenue').innerText = formatCurrency(stats.revenue);
                                     document.getElementById('stat-assets').innerText = formatCurrency(stats.assets);
                                     
-                                    // Handle Politician Sub-Card Evaluation
                                     const card = document.getElementById('politician-card');
                                     if (stats.rep_name) {
                                         document.getElementById('rep-name').innerText = stats.rep_name;
@@ -384,7 +405,6 @@
                                         const partyEl = document.getElementById('rep-party');
                                         partyEl.innerText = stats.rep_party;
                                         
-                                        // Dynamic Color Coding
                                         const pLower = stats.rep_party.toLowerCase();
                                         if (pLower.includes('democrat')) {
                                             partyEl.style.color = '#2980b9';
@@ -394,7 +414,6 @@
                                             partyEl.style.color = '#7f8c8d';
                                         }
                                         
-                                        // Set image src path and mount fallback
                                         const imgEl = document.getElementById('rep-photo');
                                         imgEl.src = stats.rep_photo.replace("images/", "images/legislator_headshots/");
                                         imgEl.onerror = function() {
@@ -448,7 +467,6 @@
                     resultItem.onclick = function() {
                         const targetMarker = markerDictionary[matchName];
                         
-                        // Physically zooms into the cluster and opens the target popup
                         markerClusterGroup.zoomToShowLayer(targetMarker, function() {
                             targetMarker.openPopup();
                         });
