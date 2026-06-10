@@ -163,7 +163,7 @@
         }
 
         // Parse local CSV pins with bumped cache version
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=10", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=11", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -192,7 +192,7 @@
 
                 if (!isNaN(lat) && !isNaN(lon)) {
                     const name = (row.NAME || "Unknown").toUpperCase().trim();
-                    const groupKey = `${lat}_${lon}`; // Removed Name from grouping logic
+                    const groupKey = `${lat}_${lon}`; 
 
                     if (!groupedData[groupKey]) {
                         groupedData[groupKey] = {
@@ -261,7 +261,6 @@
                     const marker = L.marker([group.lat, group.lon]).bindPopup(popupHTML);
                     markers.push(marker);
                     
-                    // Add all names to the search dictionary pointing to this one marker
                     group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
                 }
 
@@ -285,7 +284,7 @@
                         // Hide the politician card since this is an address, not a district
                         document.getElementById('politician-card').style.display = 'none';
 
-                        // Create a temporary scrollable ledger inside the sidebar
+                        // CLEAR EXISTING LEDGER TO PREVENT DUPLICATES
                         let existingLedger = document.getElementById('mega-node-ledger');
                         if (existingLedger) existingLedger.remove();
 
@@ -336,10 +335,13 @@
             document.getElementById('sidebar-instructions').style.display = 'block';
             document.getElementById('sidebar-title').innerText = "District Impact Summary";
 
+            // BUG FIX: Clear ledger when changing map layers
+            let existingLedger = document.getElementById('mega-node-ledger');
+            if (existingLedger) existingLedger.remove();
+
             if (selectedLayer === 'none') return;
 
-            // Updated cache version to 10
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=10`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=11`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
@@ -356,6 +358,11 @@
 
                             layer.on('click', function(event) {
                                 L.DomEvent.stopPropagation(event);
+                                
+                                // BUG FIX: Clear ledger when clicking a district boundary
+                                let existingLedger = document.getElementById('mega-node-ledger');
+                                if (existingLedger) existingLedger.remove();
+
                                 const idStr = String(distId);
                                 document.getElementById('sidebar-title').innerText = `District #${idStr} Footprint`;
                                 
