@@ -75,6 +75,16 @@
             <option value="7">501(c)(7) - Social Clubs</option>
             <option value="8">501(c)(8) - Fraternal Beneficiary</option>
         </select>
+        
+        <hr>
+
+        <h3>3. Financial Impact</h3>
+        <select id="revenue-filter">
+            <option value="0">All Organizations</option>
+            <option value="1">Active Only (> $0)</option>
+            <option value="100000">Significant (> $100k)</option>
+            <option value="1000000">Major Players (> $1M)</option>
+        </select>
     </div>
 
     <div id="sidebar">
@@ -132,7 +142,7 @@
         }
 
         // Parse local CSV pins
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=8", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=9", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -142,6 +152,7 @@
             for (let key in markerDictionary) delete markerDictionary[key];
 
             const filterValue = document.getElementById('type-filter').value;
+            const minRevenue = parseFloat(document.getElementById('revenue-filter').value) || 0;
             const markers = [];
             const groupedData = {};
 
@@ -151,6 +162,9 @@
                 const subsection = row.SUBSECTION || "Unknown";
                 
                 if (filterValue !== 'all' && String(subsection) !== filterValue) continue;
+
+                const revAmt = parseFloat(row.REVENUE_AMT) || 0;
+                if (revAmt < minRevenue) continue;
 
                 const lat = parseFloat(row.LATITUDE);
                 const lon = parseFloat(row.LONGITUDE);
@@ -285,6 +299,7 @@
         }
 
         document.getElementById('type-filter').addEventListener('change', renderPins);
+        document.getElementById('revenue-filter').addEventListener('change', renderPins);
 
         // Add an event listener to the map to clear the Mega-Node ledger when clicking away
         map.on('click', function() {
@@ -302,7 +317,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=8`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=9`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
