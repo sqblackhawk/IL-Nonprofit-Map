@@ -41,35 +41,30 @@
         #rep-party { font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
         #rep-term { font-size: 12px; color: #7f8c8d; margin-top: 2px; }
 
-        /* Custom Map Pin Styles - DENSITY BASED */
+        /* EXACT ADDRESS NODES (Solid Colors) */
         .pin-single {
-            background-color: #3498db; border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 0 4px rgba(0,0,0,0.4);
+            background-color: #3498db; border: 1px solid white; border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
         }
         .pin-multi {
             background-color: #e67e22; border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 0 6px rgba(0,0,0,0.4); color: white; font-size: 11px; font-weight: bold;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4); color: white; font-size: 11px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
         }
         .pin-mega {
             background-color: #e74c3c; border: 2px solid white; border-radius: 50%;
-            box-shadow: 0 0 8px rgba(0,0,0,0.6); color: white; font-size: 13px; font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5); color: white; font-size: 12px; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Smart Cluster Overrides - DENSITY BASED */
-        .cluster-single-style {
-            background-color: rgba(52, 152, 219, 0.9); border: 3px solid rgba(52, 152, 219, 0.4);
-            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
+        /* GEOGRAPHIC AREA CLUSTERS (Hollow Rings) */
+        .area-cluster {
+            background-color: rgba(255, 255, 255, 0.85); border: 3px solid #34495e; border-radius: 50%;
+            color: #2c3e50; font-size: 11px; font-weight: bold; display: flex; align-items: center; 
+            justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .cluster-multi-style {
-            background-color: rgba(230, 126, 34, 0.9); border: 3px solid rgba(230, 126, 34, 0.4);
-            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
-        }
-        .cluster-mega-style {
-            background-color: rgba(231, 76, 60, 0.9); border: 4px solid rgba(231, 76, 60, 0.4);
-            border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        .area-cluster-large {
+            border-color: #8e44ad; color: #8e44ad; font-size: 13px; border-width: 4px;
         }
     </style>
 </head>
@@ -184,10 +179,17 @@
         let highlightedSearchName = null; 
         const markerDictionary = {}; 
 
-        // SMART RE-AGGREGATED CLUSTERING ENGINE (Density Based)
+        // SMART CLUSTERING ENGINE (Zoom-Responsive Rings)
         const markerClusterGroup = L.markerClusterGroup({ 
             chunkedLoading: true, 
-            maxClusterRadius: 50,
+            
+            // DYNAMIC RADIUS: Shrinks at state-level to show texture, expands at city-level to cluster cleanly
+            maxClusterRadius: function(zoom) {
+                if (zoom <= 7) return 20;  // Statewide view: Lots of texture
+                if (zoom <= 10) return 35; // Regional view: Moderate clustering
+                return 50;                 // City street view: Normal clustering
+            },
+
             iconCreateFunction: function(cluster) {
                 const childMarkers = cluster.getAllChildMarkers();
                 let totalNonprofitsInside = 0;
@@ -196,20 +198,18 @@
                     totalNonprofitsInside += (marker.nonprofitCount || 1);
                 });
 
-                let clusterClass = 'cluster-single-style';
                 let size = 30;
+                let cssClass = 'area-cluster';
 
-                if (totalNonprofitsInside >= 15) {
-                    clusterClass = 'cluster-mega-style';
-                    size = 44;
-                } else if (totalNonprofitsInside > 1) {
-                    clusterClass = 'cluster-multi-style';
-                    size = 36;
+                // Large geographic areas get the purple highlight ring
+                if (totalNonprofitsInside >= 100) {
+                    size = 38;
+                    cssClass = 'area-cluster area-cluster-large';
                 }
 
                 return L.divIcon({
-                    html: `<div style="line-height: ${size}px; width: 100%; height: 100%; font-size: 12px;">${totalNonprofitsInside.toLocaleString()}</div>`,
-                    className: clusterClass,
+                    html: `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${totalNonprofitsInside.toLocaleString()}</div>`,
+                    className: cssClass,
                     iconSize: [size, size]
                 });
             }
@@ -222,7 +222,7 @@
             return "$" + num.toLocaleString();
         }
 
-        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=20", {
+        Papa.parse("data_processed/il_nonprofits_geocoded.csv?v=21", {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) { allNonprofitData = results.data; renderPins(); }
         });
@@ -265,11 +265,9 @@
                             instances: []
                         };
                     } else if (addressStr && addressStr.length > 4 && addressStr.length < groupedData[groupKey].address.length) {
-                        // SMART TITLING: Select the shortest valid address string to naturally drop PMBs/Suites
                         const currentIsPO = groupedData[groupKey].address.includes("PO BOX");
                         const newIsPO = addressStr.includes("PO BOX");
                         
-                        // Prioritize real streets over PO Boxes if they exist at the same coordinate
                         if (currentIsPO && !newIsPO) {
                             groupedData[groupKey].address = addressStr; 
                         } else if (!(!currentIsPO && newIsPO)) {
@@ -292,7 +290,7 @@
             for (const groupKey in groupedData) {
                 const group = groupedData[groupKey];
                 
-                // 1. Single Entity Marker
+                // 1. Single Entity Marker (Small Dot)
                 if (group.count === 1) {
                     const inst = group.instances[0];
                     const popupHTML = `
@@ -304,7 +302,7 @@
                             <b>Total Assets:</b> ${formatCurrency(inst.assets)}
                         </div>
                     `;
-                    const customIcon = L.divIcon({ className: 'pin-single', iconSize: [12, 12] });
+                    const customIcon = L.divIcon({ className: 'pin-single', iconSize: [10, 10] });
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
                     
                     marker.nonprofitCount = 1;
@@ -312,7 +310,7 @@
                     markerDictionary[inst.name.toLowerCase()] = marker;
                 } 
                 
-                // 2. Standard Multi-Entity Marker (2 - 14)
+                // 2. Standard Multi-Entity Marker (2 - 14) (Medium Orange)
                 else if (group.count > 1 && group.count < 15) {
                     let popupHTML = `
                         <div class="popup-title">${group.address ? group.address : `Multi-Entity Location (${group.count})`}</div>
@@ -339,7 +337,7 @@
                     const customIcon = L.divIcon({ 
                         className: 'pin-multi', 
                         html: group.count,
-                        iconSize: [24, 24] 
+                        iconSize: [22, 22] 
                     });
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon }).bindPopup(popupHTML);
                     
@@ -350,12 +348,12 @@
                     group.instances.forEach(inst => { markerDictionary[inst.name.toLowerCase()] = marker; });
                 }
 
-                // 3. Mega Nodes (15+)
+                // 3. Mega Nodes 15+ (Large Red)
                 else {
                     const customIcon = L.divIcon({ 
                         className: 'pin-mega', 
                         html: group.count,
-                        iconSize: [32, 32] 
+                        iconSize: [30, 30] 
                     });
                     const marker = L.marker([group.lat, group.lon], { icon: customIcon });
                     
@@ -449,7 +447,7 @@
 
             if (selectedLayer === 'none') return;
 
-            fetch(`data_processed/aggregated_${selectedLayer}.json?v=20`)
+            fetch(`data_processed/aggregated_${selectedLayer}.json?v=21`)
                 .then(res => res.json())
                 .then(aggregateData => {
                     activeAggregates = aggregateData;
